@@ -13,7 +13,7 @@ const validateProfileInput = require('../../validation/profile');
 // @route GET api/profile/test
 // @desc Test profile route
 // @access Public
-router.get('/test', (req, res) => res.json({ msg: "Profile Works" }));
+router.get('/test', (req, res) => res.json({ msg: 'Profile Works' }));
 
 // @route GET api/profile
 // @desc Get current users profile
@@ -25,13 +25,67 @@ router.get('/', passport.authenticate("jwt", { session: false }), (req, res) => 
         .populate('user', ['name', 'avatar'])
         .then(profile => {
             if (!profile) {
-                errors.no_profile = "There is no profile for this user";
+                errors.no_profile = 'There is no profile for this user';
                 return res.status(404).json(errors);
             }
 
             res.json(profile);
         })
         .catch(err => res.status(500).json(err));
+});
+
+// @route GET api/profile/all
+// @desc Get all profiles
+// @access Public
+router.get('/all', (req, res) => {
+    const errors = {};
+    Profile.find()
+        .populate('user', ['name', 'avatar'])
+        .then(profiles => {
+            if (!profiles) {
+                errors.no_profiles = 'There are no profiles';
+                return res.status(404).json(errors)
+            }
+
+            res.json(profiles);
+        })
+        .catch(err => res.status(404).json({ no_profiles: 'There are no profiles' }));
+});
+
+// @route GET api/profile/slug/:slug
+// @desc Get profile by slug
+// @access Public
+router.get('/slug/:slug', (req, res) => {
+    const errors = {};
+    Profile.findOne({ slug: req.params.slug })
+        .populate('user', ['name', 'avatar'])
+        .then(profile => {
+            if (!profile) {
+                errors.no_profile = 'There is no profile for this user';
+                res.status(404).json(errors);
+            }
+
+            res.json(profile);
+        })
+        .catch(err => res.status(404).json(err));
+});
+
+// @route GET api/profile/user/:user_id
+// @desc Get profile by user id
+// @access Public
+router.get('/user/:user_id', (req, res) => {
+    const errors = {};
+    Profile.findOne({ user: req.params.user_id })
+        .populate('user', ['name', 'avatar'])
+        .then(profile => {
+            if (!profile) {
+                errors.no_profile = 'There is no profile for this user';
+                res.status(404).json(errors);
+            }
+
+            res.json(profile);
+        })
+        .catch(err => res.status(404).json({ profile: 'There is no profile for this user' }));
 });
 
 // @route POST api/profile
