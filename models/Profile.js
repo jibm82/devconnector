@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const ProfileSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
-        required: true
+        ref: 'users'
     },
     slug: {
         type: String,
@@ -117,4 +117,4 @@ const ProfileSchema = new Schema({
     }
 });
 
-module.exports = Profile = mongoose.model('profile', ProfileSchema);
+module.exports = Profile = mongoose.model('profiles', ProfileSchema);
